@@ -30,4 +30,4 @@ TEST_SIZE = 0.05
 # ==========================
 # Realtime inference
 # ==========================
-THRESHOLD = 0.98
+THRESHOLD = 0.8
