@@ -1,4 +1,82 @@
+# gui/app.py
 import sys
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+    QLabel,
+    QMessageBox
+)
+from PyQt5.QtCore import Qt
+from gui.test_window import TestModelWindow
+from gui.collect_window import CollectDataWindow
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Lenguaje de Señas - Panel Principal")
+        self.setFixedSize(400, 300)
+
+        # ---------- Título ----------
+        title = QLabel("Seleccione una acción")
+        title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("font-size: 18px; font-weight: bold;")
+
+        # ---------- Botones ----------
+        btn_collect = QPushButton("📦 Recolectar datos")
+        btn_train = QPushButton("🧠 Entrenar modelo")
+        btn_test = QPushButton("🎥 Probar modelo")
+
+        btn_collect.setFixedHeight(40)
+        btn_train.setFixedHeight(40)
+        btn_test.setFixedHeight(40)
+
+        # ---------- Conexiones ----------
+        btn_collect.clicked.connect(self.collect_clicked)
+        btn_train.clicked.connect(self.train_clicked)
+        btn_test.clicked.connect(self.test_clicked)
+
+        # ---------- Layout ----------
+        layout = QVBoxLayout()
+        layout.setSpacing(15)
+        layout.addWidget(title)
+        layout.addWidget(btn_collect)
+        layout.addWidget(btn_train)
+        layout.addWidget(btn_test)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+
+    # ---------- Acciones (por ahora solo mensajes) ----------
+    def collect_clicked(self):
+        self.collect_window = CollectDataWindow()
+        self.collect_window.show()
+
+    def train_clicked(self):
+        QMessageBox.information(self, "Entrenar", "Aquí irá el entrenamiento del modelo")
+
+    def test_clicked(self):
+        self.test_window = TestModelWindow()
+        self.test_window.show()
+
+
+def run_app():
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    run_app()
+
+
+""" import sys
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -90,3 +168,4 @@ def run_gui():
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
+ """

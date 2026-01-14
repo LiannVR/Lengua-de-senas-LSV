@@ -21,6 +21,8 @@ def realtime_test():
     predictions = []
     prediction_buffer = deque(maxlen=10)
 
+    NOTHING_INDEX = np.where(ACTIONS == "NOTHING_POSE")[0][0]
+
     cap = cv2.VideoCapture(0)
     mp_holistic = mp.solutions.holistic
 
@@ -34,7 +36,7 @@ def realtime_test():
 
         while True:
 
-            # ❌ Detectar cierre de ventana
+            # 🔴 Cerrar con la X
             if cv2.getWindowProperty(WINDOW_NAME, cv2.WND_PROP_VISIBLE) < 1:
                 break
 
@@ -64,16 +66,21 @@ def realtime_test():
                 predictions.append(pred_class)
                 predictions = predictions[-10:]
 
-                if (
-                    confidence > THRESHOLD and
-                    predictions.count(pred_class) >= 7
-                ):
-                    action = ACTIONS[pred_class]
-                    if not sentence or action != sentence[-1]:
-                        sentence.append(action)
+                # 🛑 FILTRO NOTHING_POSE
+                if pred_class == NOTHING_INDEX:
+                    predictions.clear()
+                else:
+                    if (
+                        confidence > THRESHOLD and
+                        predictions.count(pred_class) >= 7
+                    ):
+                        action = ACTIONS[pred_class]
+                        if not sentence or action != sentence[-1]:
+                            sentence.append(action)
 
             sentence = sentence[-5:]
 
+            # 🎨 UI
             cv2.rectangle(image, (0, 0), (640, 40), (0, 0, 0), -1)
             cv2.putText(
                 image,
@@ -88,7 +95,7 @@ def realtime_test():
 
             cv2.imshow(WINDOW_NAME, image)
 
-            # ⌨️ Salida con 'q'
+            # ⌨️ Salir con q
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 

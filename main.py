@@ -1,4 +1,4 @@
-from gui.app import run_gui
+from gui.app import run_app
 from data.collector import collect_data
 from model.train import train_model
 from realtime.inference import realtime_test
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         elif option == "3":
             realtime_test()
         elif option == "4":
-            run_gui()
+            run_app()
         elif option == "0":
             break
         else:
