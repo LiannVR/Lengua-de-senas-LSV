@@ -11,14 +11,7 @@ from config.settings import (
 def build_lstm_model():
     model = Sequential()
 
-    model.add(
-        LSTM(
-            64,
-            return_sequences=True,
-            activation='relu',
-            input_shape=(SEQUENCE_LENGTH, KEYPOINTS_DIM)
-        )
-    )
+    model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(SEQUENCE_LENGTH, KEYPOINTS_DIM)))
     model.add(LSTM(128, return_sequences=True, activation='relu'))
     model.add(LSTM(64, return_sequences=False, activation='relu'))
 

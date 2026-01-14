@@ -15,7 +15,7 @@ MODEL_PATH = os.path.join(BASE_DIR, 'action.h5')
 # ==========================
 ACTIONS = np.array(['hola', 'gracias', 'te_amo'])
 
-NO_SEQUENCES = 30
+NO_SEQUENCES = 150
 SEQUENCE_LENGTH = 30
 
 # 33 pose * 4 + 468 face * 3 + 21 lh * 3 + 21 rh * 3
@@ -30,4 +30,4 @@ TEST_SIZE = 0.05
 # ==========================
 # Realtime inference
 # ==========================
-THRESHOLD = 0.2
+THRESHOLD = 0.98

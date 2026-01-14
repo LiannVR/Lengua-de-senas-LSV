@@ -18,19 +18,152 @@ def create_folders():
     Crea la estructura de carpetas:
     MP_DATA/action/sequence/frame.npy
     """
+
+    import os
+import numpy as np
+from config.settings import DATA_PATH, ACTIONS, NO_SEQUENCES
+
+
+def create_folders():
+    """
+    Crea la estructura:
+    MP_DATA/action/sequence/frame.npy
+    Continúa la numeración si ya existen datos.
+    """
+
+    # Crear carpeta base
+    os.makedirs(DATA_PATH, exist_ok=True)
+
+    for action in ACTIONS:
+        action_path = os.path.join(DATA_PATH, action)
+
+        # Crear carpeta de la acción
+        os.makedirs(action_path, exist_ok=True)
+
+        # Obtener secuencias existentes (solo números)
+        existing_sequences = [
+            int(folder)
+            for folder in os.listdir(action_path)
+            if folder.isdigit()
+        ]
+
+        # Determinar punto de inicio
+        start_sequence = max(existing_sequences) + 1 if existing_sequences else 0
+
+        # Crear nuevas secuencias
+        for sequence in range(start_sequence, start_sequence + NO_SEQUENCES):
+            os.makedirs(
+                os.path.join(action_path, str(sequence)),
+                exist_ok=True
+            )
+
+
+    """
+    for action in ACTIONS: 
+        dirmax = np.max(np.array(os.listdir(os.path.join(DATA_PATH, action))).astype(int))
+        for sequence in range(1,NO_SEQUENCES+1):
+            try: 
+                os.makedirs(os.path.join(DATA_PATH, action, str(dirmax+sequence)))
+            except:
+                pass """
+            
+    """
     for action in ACTIONS:
         for sequence in range(NO_SEQUENCES):
             os.makedirs(
                 os.path.join(DATA_PATH, action, str(sequence)),
                 exist_ok=True
-            )
+            ) """
 
 
 def collect_data(start_sequence: int = 0):
     """
     Recolecta keypoints para entrenamiento y testeo
     """
+
     create_folders()
+
+    cap = cv2.VideoCapture(0)
+    WINDOW_NAME = "OpenCV Feed"
+
+    cv2.namedWindow(WINDOW_NAME)
+
+    with mp.solutions.holistic.Holistic(
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5
+    ) as holistic:
+
+        for action in ACTIONS:
+            for sequence in range(start_sequence, start_sequence + NO_SEQUENCES):
+                for frame_num in range(SEQUENCE_LENGTH):
+
+                    # 🚪 Detectar cierre con X
+                    if cv2.getWindowProperty(WINDOW_NAME, cv2.WND_PROP_VISIBLE) < 1:
+                        cap.release()
+                        cv2.destroyAllWindows()
+                        return
+
+                    ret, frame = cap.read()
+                    if not ret:
+                        continue
+
+                    image, results = mediapipe_detection(frame, holistic)
+                    draw_styled_landmarks(image, results)
+
+                    if frame_num == 0:
+                        cv2.putText(
+                            image,
+                            'STARTING COLLECTION',
+                            (120, 200),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            1,
+                            (0, 255, 0),
+                            4,
+                            cv2.LINE_AA
+                        )
+                        cv2.putText(
+                            image,
+                            f'Collecting frames for {action} - Video {sequence}',
+                            (15, 12),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5,
+                            (0, 0, 255),
+                            1,
+                            cv2.LINE_AA
+                        )
+
+                        cv2.imshow(WINDOW_NAME, image)
+                        cv2.waitKey(500)
+                    else:
+                        cv2.putText(
+                            image,
+                            f'Collecting frames for {action} - Video {sequence}',
+                            (15, 12),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5,
+                            (0, 0, 255),
+                            1,
+                            cv2.LINE_AA
+                        )
+                        cv2.imshow(WINDOW_NAME, image)
+
+                    keypoints = extract_keypoints(results)
+                    np.save(
+                        os.path.join(DATA_PATH, action, str(sequence), str(frame_num)),
+                        keypoints
+                    )
+
+                    # Tecla q (opcional mantenerla)
+                    if cv2.waitKey(10) & 0xFF == ord('q'):
+                        cap.release()
+                        cv2.destroyAllWindows()
+                        return
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+    """ create_folders()
 
     cap = cv2.VideoCapture(0)
 
@@ -111,3 +244,4 @@ def collect_data(start_sequence: int = 0):
 
     cap.release()
     cv2.destroyAllWindows()
+ """
