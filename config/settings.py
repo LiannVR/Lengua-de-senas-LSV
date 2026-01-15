@@ -13,7 +13,6 @@ MODEL_PATH = os.path.join(BASE_DIR, 'action.h5')
 # ==========================
 # Dataset
 # ==========================
-ACTIONS = np.array(['hola', 'gracias', 'te_amo', "NOTHING_POSE"])
 
 NO_SEQUENCES = 150
 SEQUENCE_LENGTH = 30

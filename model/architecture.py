@@ -4,8 +4,10 @@ from tensorflow.keras.layers import LSTM, Dense
 from config.settings import (
     SEQUENCE_LENGTH,
     KEYPOINTS_DIM,
-    ACTIONS
 )
+from config.actions import load_actions
+
+ACTIONS = load_actions()
 
 
 def build_lstm_model():

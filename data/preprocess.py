@@ -6,10 +6,12 @@ from tensorflow.keras.utils import to_categorical
 
 from config.settings import (
     DATA_PATH,
-    ACTIONS,
     NO_SEQUENCES,
     SEQUENCE_LENGTH
 )
+from config.actions import load_actions
+
+ACTIONS = load_actions()
 
 
 def load_sequences():

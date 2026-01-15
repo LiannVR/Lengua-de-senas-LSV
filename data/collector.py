@@ -7,10 +7,12 @@ from core.mediapipe_utils import mediapipe_detection, draw_styled_landmarks
 from core.keypoints import extract_keypoints
 from config.settings import (
     DATA_PATH,
-    ACTIONS,
     NO_SEQUENCES,
     SEQUENCE_LENGTH
 )
+from config.actions import load_actions
+
+ACTIONS = load_actions()
 
 mp_holistic = mp.solutions.holistic
 

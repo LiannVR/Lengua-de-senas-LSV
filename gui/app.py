@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from gui.test_window import TestModelWindow
 from gui.collect_window import CollectDataWindow
-
+from gui.train_window import TrainModelWindow
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -58,7 +58,8 @@ class MainWindow(QMainWindow):
         self.collect_window.show()
 
     def train_clicked(self):
-        QMessageBox.information(self, "Entrenar", "Aquí irá el entrenamiento del modelo")
+        self.train_window = TrainModelWindow()
+        self.train_window.show()
 
     def test_clicked(self):
         self.test_window = TestModelWindow()

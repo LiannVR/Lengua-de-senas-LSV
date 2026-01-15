@@ -7,11 +7,13 @@ from core.mediapipe_utils import mediapipe_detection, draw_styled_landmarks
 from core.keypoints import extract_keypoints
 from tensorflow.keras.models import load_model
 from config.settings import (
-    ACTIONS,
     MODEL_PATH,
     THRESHOLD,
     SEQUENCE_LENGTH
 )
+from config.actions import load_actions
+
+ACTIONS = load_actions()
 
 def realtime_test():
     model = load_model(MODEL_PATH)
@@ -19,7 +21,7 @@ def realtime_test():
     sequence = []
     sentence = []
     predictions = []
-    prediction_buffer = deque(maxlen=10)
+    prediction_buffer = deque(maxlen=5)
 
     NOTHING_INDEX = np.where(ACTIONS == "NOTHING_POSE")[0][0]
 
@@ -64,7 +66,7 @@ def realtime_test():
                 confidence = avg_res[pred_class]
 
                 predictions.append(pred_class)
-                predictions = predictions[-10:]
+                predictions = predictions[-5:]
 
                 # 🛑 FILTRO NOTHING_POSE
                 if pred_class == NOTHING_INDEX:
@@ -72,7 +74,7 @@ def realtime_test():
                 else:
                     if (
                         confidence > THRESHOLD and
-                        predictions.count(pred_class) >= 7
+                        predictions.count(pred_class) >= 3
                     ):
                         action = ACTIONS[pred_class]
                         if not sentence or action != sentence[-1]:
