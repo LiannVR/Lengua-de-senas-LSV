@@ -62,8 +62,6 @@ def get_train_test_data(test_size=0.05, random_state=42):
         X,
         y,
         test_size=test_size,
-        random_state=random_state,
-        stratify=y
     )
 
     return X_train, X_test, y_train, y_test

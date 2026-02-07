@@ -24,7 +24,7 @@ def build_lstm_model():
     model.compile(
         optimizer='Adam',
         loss='categorical_crossentropy',
-        metrics=['accuracy']
+        metrics=['categorical_accuracy']
     )
 
     return model
