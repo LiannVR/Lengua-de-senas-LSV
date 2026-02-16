@@ -30,3 +30,8 @@ TEST_SIZE = 0.05
 # Realtime inference
 # ==========================
 THRESHOLD = 0.8
+
+# ==========================
+# Security
+# ==========================
+ADVANCED_PASSWORD = "admin123"  # cámbiala cuando quieras

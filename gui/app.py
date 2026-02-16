@@ -7,63 +7,82 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QLabel,
-    QMessageBox
+    QInputDialog,
+    QMessageBox,
+    QLineEdit
 )
 from PyQt5.QtCore import Qt
+
 from gui.test_window import TestModelWindow
-from gui.collect_window import CollectDataWindow
-from gui.train_window import TrainModelWindow
+from gui.advanced_window import AdvancedWindow
+from config.settings import ADVANCED_PASSWORD
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Lenguaje de Señas - Panel Principal")
-        self.setFixedSize(400, 300)
+        self.setWindowTitle("Lenguaje de Señas")
+        self.setFixedSize(360, 220)
 
-        # ---------- Título ----------
-        title = QLabel("Seleccione una acción")
+        title = QLabel("Reconocimiento de Lenguaje de Señas")
         title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet("font-size: 18px; font-weight: bold;")
 
-        # ---------- Botones ----------
-        btn_collect = QPushButton("📦 Recolectar datos")
-        btn_train = QPushButton("🧠 Entrenar modelo")
+        subtitle = QLabel("Seleccione una opción")
+        subtitle.setAlignment(Qt.AlignCenter)
+        subtitle.setStyleSheet("color: gray;")
+
         btn_test = QPushButton("🎥 Probar modelo")
+        btn_advanced = QPushButton("⚙️ Configuración avanzada")
 
-        btn_collect.setFixedHeight(40)
-        btn_train.setFixedHeight(40)
-        btn_test.setFixedHeight(40)
+        btn_test.setFixedHeight(45)
+        btn_advanced.setFixedHeight(40)
 
-        # ---------- Conexiones ----------
-        btn_collect.clicked.connect(self.collect_clicked)
-        btn_train.clicked.connect(self.train_clicked)
-        btn_test.clicked.connect(self.test_clicked)
+        btn_test.clicked.connect(self.open_test)
+        btn_advanced.clicked.connect(self.ask_password)
 
-        # ---------- Layout ----------
         layout = QVBoxLayout()
         layout.setSpacing(15)
         layout.addWidget(title)
-        layout.addWidget(btn_collect)
-        layout.addWidget(btn_train)
+        layout.addWidget(subtitle)
+        layout.addStretch()
         layout.addWidget(btn_test)
+        layout.addWidget(btn_advanced)
 
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
 
-    # ---------- Acciones (por ahora solo mensajes) ----------
-    def collect_clicked(self):
-        self.collect_window = CollectDataWindow()
-        self.collect_window.show()
-
-    def train_clicked(self):
-        self.train_window = TrainModelWindow()
-        self.train_window.show()
-
-    def test_clicked(self):
+    def open_test(self):
         self.test_window = TestModelWindow()
         self.test_window.show()
+
+    # 🔐 Paso intermedio
+    def ask_password(self):
+        password, ok = QInputDialog.getText(
+            self,
+            "Acceso restringido",
+            "Ingrese la contraseña:",
+            QLineEdit.Password
+        )
+
+        if not ok:
+            return
+
+        if password == ADVANCED_PASSWORD:
+            self.open_advanced()
+        else:
+            QMessageBox.critical(
+                self,
+                "Acceso denegado",
+                "Contraseña incorrecta"
+            )
+
+
+    def open_advanced(self):
+        self.advanced_window = AdvancedWindow()
+        self.advanced_window.show()
 
 
 def run_app():
@@ -77,96 +96,77 @@ if __name__ == "__main__":
     run_app()
 
 
-""" import sys
+""" # gui/app.py
+import sys
 from PyQt5.QtWidgets import (
     QApplication,
-    QWidget,
+    QMainWindow,
     QPushButton,
     QVBoxLayout,
-    QLabel,
-    QTextEdit,
-    QMessageBox
+    QWidget,
+    QLabel
 )
 from PyQt5.QtCore import Qt
 
-from data.collector import collect_data
-from model.train import train_model
-from realtime.inference import realtime_test
+from gui.test_window import TestModelWindow
+from gui.advanced_window import AdvancedWindow
 
 
-class MainWindow(QWidget):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Lenguaje de Señas - LSTM")
-        self.setGeometry(200, 200, 400, 350)
 
-        self.init_ui()
+        self.setWindowTitle("Lenguaje de Señas")
+        self.setFixedSize(360, 220)
 
-    def init_ui(self):
-        layout = QVBoxLayout()
-
+        # ---------- Título ----------
         title = QLabel("Reconocimiento de Lenguaje de Señas")
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("font-size: 16px; font-weight: bold;")
+        title.setStyleSheet("font-size: 18px; font-weight: bold;")
+
+        subtitle = QLabel("Seleccione una opción")
+        subtitle.setAlignment(Qt.AlignCenter)
+        subtitle.setStyleSheet("color: gray;")
+
+        # ---------- Botones ----------
+        btn_test = QPushButton("🎥 Probar modelo")
+        btn_advanced = QPushButton("⚙️ Configuración avanzada")
+
+        btn_test.setFixedHeight(45)
+        btn_advanced.setFixedHeight(40)
+
+        btn_test.clicked.connect(self.open_test)
+        btn_advanced.clicked.connect(self.open_advanced)
+
+        # ---------- Layout ----------
+        layout = QVBoxLayout()
+        layout.setSpacing(15)
         layout.addWidget(title)
-
-        self.log_box = QTextEdit()
-        self.log_box.setReadOnly(True)
-        layout.addWidget(self.log_box)
-
-        btn_collect = QPushButton("📸 Recolectar datos")
-        btn_train = QPushButton("🧠 Entrenar modelo")
-        btn_test = QPushButton("🎥 Testeo en tiempo real")
-
-        btn_collect.clicked.connect(self.run_collector)
-        btn_train.clicked.connect(self.run_training)
-        btn_test.clicked.connect(self.run_realtime)
-
-        layout.addWidget(btn_collect)
-        layout.addWidget(btn_train)
+        layout.addWidget(subtitle)
+        layout.addStretch()
         layout.addWidget(btn_test)
+        layout.addWidget(btn_advanced)
 
-        self.setLayout(layout)
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
 
-    # =========================
-    # Actions
-    # =========================
+    def open_test(self):
+        self.test_window = TestModelWindow()
+        self.test_window.show()
 
-    def log(self, message):
-        self.log_box.append(message)
-
-    def run_collector(self):
-        self.log("▶ Iniciando recolección de datos...")
-        try:
-            collect_data()
-            self.log("✅ Recolección finalizada")
-        except Exception as e:
-            self.show_error(e)
-
-    def run_training(self):
-        self.log("▶ Entrenando modelo...")
-        try:
-            train_model()
-            self.log("✅ Entrenamiento completado")
-        except Exception as e:
-            self.show_error(e)
-
-    def run_realtime(self):
-        self.log("▶ Iniciando testeo en tiempo real...")
-        try:
-            realtime_test()
-            self.log("⏹ Testeo finalizado")
-        except Exception as e:
-            self.show_error(e)
-
-    def show_error(self, error):
-        QMessageBox.critical(self, "Error", str(error))
-        self.log(f"❌ Error: {error}")
+    def open_advanced(self):
+        self.advanced_window = AdvancedWindow()
+        self.advanced_window.show()
 
 
-def run_gui():
+def run_app():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    run_app()
  """
