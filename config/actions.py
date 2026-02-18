@@ -8,7 +8,6 @@ def load_actions():
         if os.path.isdir(os.path.join(DATA_PATH, f))
     ]
     actions.sort()  # <-- importante: orden consistente
-    print(actions)
     return np.array(actions)
     
 
