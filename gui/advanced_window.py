@@ -16,7 +16,7 @@ class AdvancedWindow(QWidget):
         super().__init__()
 
         self.setWindowTitle("Configuración avanzada")
-        self.setFixedSize(360, 250)
+        self.showMaximized()
 
         title = QLabel("Opciones avanzadas")
         title.setAlignment(Qt.AlignCenter)
