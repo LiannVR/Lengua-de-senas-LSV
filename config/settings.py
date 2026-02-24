@@ -24,12 +24,12 @@ KEYPOINTS_DIM = 1662
 # Training
 # ==========================
 EPOCHS = 50
-TEST_SIZE = 0.05
+TEST_SIZE = 0.20
 
 # ==========================
 # Realtime inference
 # ==========================
-THRESHOLD = 0.8
+THRESHOLD = 0.7
 
 # ==========================
 # Security

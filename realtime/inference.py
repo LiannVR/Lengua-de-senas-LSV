@@ -81,6 +81,7 @@ def realtime_test():
                             sentence.append(action)
 
             sentence = sentence[-5:]
+            print(sentence)
 
             # 🎨 UI
             cv2.rectangle(image, (0, 0), (640, 40), (0, 0, 0), -1)
