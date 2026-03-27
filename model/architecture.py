@@ -1,5 +1,6 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.optimizers import Adam
 
 from config.settings import (
     SEQUENCE_LENGTH,
@@ -13,20 +14,20 @@ ACTIONS = load_actions()
 def build_lstm_model():
     model = Sequential()
 
-    model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(SEQUENCE_LENGTH, KEYPOINTS_DIM)))
-    model.add(Dropout(0.2))
-    model.add(LSTM(128, return_sequences=True, activation='relu'))
-    model.add(Dropout(0.2))
-    model.add(LSTM(64, return_sequences=False, activation='relu'))
-    model.add(Dropout(0.2))
+    # LSTM layers con activación tanh (default correcto para LSTMs)
+    model.add(LSTM(64, return_sequences=True, input_shape=(SEQUENCE_LENGTH, KEYPOINTS_DIM)))
+    model.add(Dropout(0.1))
+    model.add(LSTM(128, return_sequences=True))
+    model.add(Dropout(0.1))
+    model.add(LSTM(64, return_sequences=False))
 
     model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.3))
+    model.add(Dropout(0.2))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(len(ACTIONS), activation='softmax'))
 
     model.compile(
-        optimizer='Adam',
+        optimizer=Adam(learning_rate=0.0005),
         loss='categorical_crossentropy',
         metrics=['categorical_accuracy']
     )

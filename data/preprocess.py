@@ -7,7 +7,8 @@ from tensorflow.keras.utils import to_categorical
 from config.settings import (
     DATA_PATH,
     NO_SEQUENCES,
-    SEQUENCE_LENGTH
+    SEQUENCE_LENGTH,
+    TEST_SIZE
 )
 from config.actions import load_actions
 
@@ -62,7 +63,7 @@ def load_sequences():
     return X, y
 
 
-def get_train_test_data(test_size=0.05, random_state=42, augment=True):
+def get_train_test_data(test_size=TEST_SIZE, random_state=42, augment=True):
     """
     Retorna los datos listos para entrenamiento y testeo.
     La augmentation se aplica SOLO sobre los datos de entrenamiento
